@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>英文程度測驗 A1–C2</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1D2B4F;--soft:#5B6B8C;--bg:#F3FAFF;--card:#fff;--line:#D9E8F5;--track:#E6EFF8;--sky:#3AA6FF;--sun:#FFC83D;
+--a1:#FF7A59;--a2:#FFB020;--b1:#2EC4A0;--b2:#3AA6FF;--c1:#7A6CFF;--c2:#E85CA8;
+box-sizing:border-box;color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 "Nunito","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;min-height:100vh;
+background-image:radial-gradient(circle at 92% -4%,#FFE79A 0,#FFE79A 120px,transparent 121px),radial-gradient(circle at -4% 40%,#CFEBFF 0,#CFEBFF 90px,transparent 91px)}
+main{max-width:640px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:2rem;font-weight:900;margin:0 0 6px;line-height:1.2}
+h2{font-size:1.15rem;font-weight:900;margin:28px 0 10px}
+p{margin:0 0 12px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 6px 0 var(--line)}
+.muted{color:var(--soft);font-size:.92rem}
+button{font:inherit;cursor:pointer}
+.btn{display:inline-block;background:var(--sun);color:var(--ink);font-weight:900;border:2px solid var(--ink);border-radius:16px;padding:12px 26px;box-shadow:0 4px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:#fff}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
+.spectrum{position:relative;height:14px;border-radius:99px;overflow:hidden;background:linear-gradient(90deg,var(--a1),var(--a2),var(--b1),var(--b2),var(--c1),var(--c2))}
+.spectrum i{position:absolute;top:0;bottom:0;right:0;background:var(--track);transition:width .3s}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 20px}
+.chip{font-weight:900;font-size:.85rem;color:#fff;border-radius:99px;padding:2px 12px}
+.q{font-size:1.3rem;font-weight:700;margin:22px 0 18px;line-height:1.5}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;color:var(--ink);font-weight:700;width:100%}
+.opt b{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--track);font-size:.85rem}
+.opt:hover{border-color:var(--sky)}
+.opt.on{border-color:var(--sky);background:#E6F4FF}
+.opt.on b{background:var(--sky);color:#fff}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.badge{display:grid;place-items:center;width:132px;height:132px;border-radius:50%;margin:0 auto 12px;color:#fff;font-size:3rem;font-weight:900;border:4px solid #fff;box-shadow:0 0 0 4px var(--c),0 8px 0 4px rgba(29,43,79,.12)}
+.center{text-align:center}
+.row{display:grid;grid-template-columns:34px 1fr 40px;gap:10px;align-items:center;margin:8px 0;font-weight:900}
+.track{height:14px;background:var(--track);border-radius:99px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px}
+.hist{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:2px dashed var(--line)}
+.hist:first-child{border-top:0}
+.hist .chip{min-width:48px;text-align:center}
+details{border:2px solid var(--line);border-radius:14px;padding:10px 14px;margin:8px 0;background:#fff}
+summary{cursor:pointer;font-weight:700}
+.ok{color:#14946F;font-weight:900}.bad{color:#D6455D;font-weight:900}
+.scroll{overflow-x:auto}
+@media (max-width:420px){.card{padding:18px}h1{font-size:1.65rem}.q{font-size:1.15rem}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+var LV=['A1','A2','B1','B2','C1','C2'];
+var COL=['#FF7A59','#FFB020','#2EC4A0','#3AA6FF','#7A6CFF','#E85CA8'];
+var NAME=['入門','基礎','進階基礎','中高級','高級','精通'];
+var DESC={
+'-1':'目前還在 A1 之前的階段。先從日常單字、be 動詞和簡單句型開始，每天讀一點點就會進步。',
+0:'你能理解並使用熟悉的日常用語與簡單句子。接下來可練習過去式、比較級與常用介系詞。',
+1:'你能處理簡單的日常溝通與熟悉話題。下一步可加強時態搭配、條件句與較長的閱讀。',
+2:'你能應付旅行、工作與學校中的常見情境，也能表達經驗與計畫。可進一步練習被動語態、間接引述與連接詞。',
+3:'你能理解較複雜的文章，並流暢、有條理地表達想法。繼續加強假設語氣、倒裝與慣用搭配。',
+4:'你能理解篇幅長、要求高的內容，並靈活運用語言於學術與職場。可挑戰更細微的字義與語氣差異。',
+5:'你的英文接近母語者的精準度，能掌握細微語意、罕見詞彙與複雜結構。'};
+// [題目, [選項], 正確索引]，每 5 題一個等級
+var Q=[
+['She ___ a student.',['is','are','am','be'],0],
+['I ___ coffee every morning.',['drink','drinks','drinking','drunk'],0],
+['___ is your name?',['What','Who','Where','When'],0],
+['There ___ two books on the table.',['is','are','am','be'],1],
+['What is the opposite of "big"?',['small','tall','long','old'],0],
+
+['Yesterday we ___ to the park.',['go','went','gone','going'],1],
+['She is ___ than her brother.',['tall','taller','tallest','more tall'],1],
+['I ___ TV when the phone rang.',['watch','watched','was watching','am watching'],2],
+['How ___ water do you drink a day?',['many','much','few','lot'],1],
+["We're going to the beach ___ Saturday.",['in','at','on','by'],2],
+
+['If it rains tomorrow, we ___ at home.',['stay','will stay','would stay','stayed'],1],
+['I have lived here ___ 2015.',['for','since','during','from'],1],
+['The report ___ by the manager yesterday.',['wrote','was written','is written','has wrote'],1],
+['He asked me where ___.',['I lived','did I live','I live','do I live'],0],
+["You ___ wear a seatbelt; it's the law.",['can','must','might','would'],1],
+
+['I wish I ___ more time to travel.',['have','had','would have','having'],1],
+['By next year, she ___ her degree.',['will finish','will have finished','finishes','is finishing'],1],
+['He denied ___ the window.',['break','to break','breaking','broke'],2],
+['___ the heavy traffic, we arrived on time.',['Despite','Although','However','Because'],0],
+['The meeting was called ___ due to illness.',['off','out','up','in'],0],
+
+['Not only ___ late, but he also forgot the documents.',['he was','was he','he is','is he'],1],
+["I'd rather you ___ anything about it yet.",["didn't say","don't say","haven't said","wouldn't say"],0],
+['Had I known about the delay, I ___ earlier.',['would leave','would have left','had left','left'],1],
+['The two theories are not mutually ___.',['exclusive','excluding','exclusion','exclusively'],0],
+["His argument doesn't hold ___; there are too many gaps.",['water','air','sand','rain'],0],
+
+["The CEO's resignation was a ___ blow to a company already struggling.",['grievous','gregarious','gratuitous','gracious'],0],
+['She was ___ by the sheer audacity of his proposal.',['nonplussed','nonchalant','nondescript','nonessential'],0],
+['The novel is deceptively simple, belying its ___ structure.',['labyrinthine','laconic','lethargic','lucid'],0],
+['The committee\'s decision was, to put it ___, controversial.',['mildly','mildew','mild','milder'],0],
+['Which sentence is correct?',['Scarcely had he arrived when the storm broke.','Scarcely he had arrived when the storm broke.','Scarcely had he arrived, then the storm broke.','Scarcely did he had arrived when the storm broke.'],0]
+];
+
+var KEY='english-level-test:history';
+var mem=[];
+function load(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):[]}catch(e){return mem}}
+function save(h){mem=h;try{localStorage.setItem(KEY,JSON.stringify(h))}catch(e){}}
+
+var app=document.getElementById('app'),S={qs:[],i:0,a:[]};
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function chip(l){return '<span class="chip" style="background:'+COL[l]+'">'+(l<0?'Pre-A1':LV[l])+'</span>'}
+function fmt(t){var d=new Date(t);return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate()+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)}
+
+function home(){
+  var h=load(),best=-2;h.forEach(function(r){if(r.level>best)best=r.level});
+  var s='<div class="card"><h1>英文程度測驗</h1><p class="muted">依 CEFR 標準，從 A1 到 C2 共 30 題，約 10 分鐘。題目由易到難，作答中不會顯示對錯。</p><div class="chips">';
+  LV.forEach(function(l,i){s+=chip(i)});
+  s+='</div><div class="spectrum"><i style="width:0"></i></div><p style="margin-top:20px"><button class="btn" onclick="start()">開始測驗</button></p>';
+  s+='<p class="muted">結果會儲存在這台裝置的瀏覽器中，不會上傳。</p></div>';
+  if(h.length){
+    s+='<h2>歷史紀錄'+(best>-2?'（最佳：'+(best<0?'Pre-A1':LV[best])+'）':'')+'</h2><div class="card">';
+    h.slice().reverse().slice(0,10).forEach(function(r){
+      s+='<div class="hist">'+chip(r.level)+'<div><b>'+r.total+' / 30 題答對</b><div class="muted">'+fmt(r.t)+'</div></div></div>';
+    });
+    s+='<p style="margin:14px 0 0"><button class="btn ghost" onclick="clr()">清除紀錄</button></p></div>';
+  }
+  app.innerHTML=s;
+}
+function clr(){if(confirm('確定要清除所有測驗紀錄嗎？')){save([]);home()}}
+
+function start(){
+  S.qs=Q.map(function(q,i){
+    var o=q[1].map(function(t,k){return{t:t,c:k===q[2]}});
+    return{q:q[0],o:shuffle(o),lv:Math.floor(i/5)};
+  });
+  S.i=0;S.a=[];quiz();window.scrollTo(0,0);
+}
+function quiz(){
+  var q=S.qs[S.i],n=S.qs.length,sel=S.a[S.i];
+  var s='<div class="card"><div class="muted">第 '+(S.i+1)+' 題 / 共 '+n+' 題</div>';
+  s+='<div class="spectrum" style="margin-top:8px"><i style="width:'+(100-S.i/n*100)+'%"></i></div>';
+  s+='<div class="q">'+q.q+'</div><div class="opts">';
+  q.o.forEach(function(o,k){
+    s+='<button class="opt'+(sel===k?' on':'')+'" onclick="pick('+k+')"><b>'+'ABCD'[k]+'</b><span>'+o.t+'</span></button>';
+  });
+  s+='</div><div class="nav"><button class="btn ghost"'+(S.i?'':' disabled')+' onclick="go(-1)">上一題</button>';
+  s+='<button class="btn" id="nx"'+(sel===undefined?' disabled':'')+' onclick="go(1)">'+(S.i===n-1?'看結果':'下一題')+'</button></div></div>';
+  app.innerHTML=s;
+}
+function pick(k){S.a[S.i]=k;quiz()}
+function go(d){
+  if(d>0&&S.i===S.qs.length-1){return finish()}
+  S.i+=d;quiz();
+}
+
+function finish(){
+  var sc=[0,0,0,0,0,0],total=0;
+  S.qs.forEach(function(q,i){if(q.o[S.a[i]].c){sc[q.lv]++;total++}});
+  var level=-1;
+  for(var i=0;i<6;i++){if(sc[i]>=3)level=i;else break}
+  var h=load();h.push({t:Date.now(),level:level,sc:sc,total:total});save(h);
+  S.res={sc:sc,total:total,level:level};result();window.scrollTo(0,0);
+}
+function result(){
+  var r=S.res,c=r.level<0?'#8A97B2':COL[r.level];
+  var s='<div class="card center"><p class="muted">你的英文程度</p><div class="badge" style="background:'+c+';--c:'+c+'">'+(r.level<0?'<span style="font-size:1.6rem">Pre-A1</span>':LV[r.level])+'</div>';
+  s+='<h1>'+(r.level<0?'起步階段':NAME[r.level])+'</h1><p>共答對 '+r.total+' / 30 題</p>';
+  var pos=r.level<0?0:(r.level+1)/6*100;
+  s+='<div class="spectrum" style="margin:14px 0"><i style="width:'+(100-pos)+'%"></i></div>';
+  s+='<p style="text-align:left">'+DESC[r.level]+'</p></div>';
+  s+='<h2>各等級答對題數</h2><div class="card">';
+  LV.forEach(function(l,i){
+    s+='<div class="row"><span style="color:'+COL[i]+'">'+l+'</span><div class="track"><i style="width:'+(r.sc[i]/5*100)+'%;background:'+COL[i]+'"></i></div><span>'+r.sc[i]+'/5</span></div>';
+  });
+  s+='<p class="muted" style="margin:12px 0 0">判定方式：由 A1 往上，每個等級至少答對 3 題才算通過，最高連續通過的等級即為你的程度。</p></div>';
+  s+='<h2>答題檢討</h2>';
+  S.qs.forEach(function(q,i){
+    var ok=q.o[S.a[i]].c,right=q.o.filter(function(o){return o.c})[0].t;
+    s+='<details><summary>'+(ok?'<span class="ok">✓</span> ':'<span class="bad">✗</span> ')+LV[q.lv]+'　'+q.q+'</summary><p style="margin:10px 0 0">你的答案：<b class="'+(ok?'ok':'bad')+'">'+q.o[S.a[i]].t+'</b>'+(ok?'':'<br>正確答案：<b class="ok">'+right+'</b>')+'</p></details>';
+  });
+  s+='<p class="center" style="margin-top:24px"><button class="btn" onclick="start()">再測一次</button> <button class="btn ghost" onclick="home()">回首頁</button></p>';
+  app.innerHTML=s;
+}
+home();
+</script>
+</body>
+</html>
