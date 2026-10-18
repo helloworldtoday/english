@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>冷門單字挑戰</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@500;800&display=swap">
+<style>
+:root{--ink:#1d2b53;--bg:#dff4ff;--sun:#ffd23f;--mint:#5ce1b0;--pink:#ff7eb6;--blue:#4cc3ff;--ok:#2fd18a;--no:#ff5d6c;--white:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;font-weight:500;line-height:1.6;
+background-image:radial-gradient(circle at 8% 12%,var(--sun) 0 70px,transparent 71px),radial-gradient(circle at 94% 88%,var(--pink) 0 90px,transparent 91px),radial-gradient(circle at 92% 8%,var(--mint) 0 46px,transparent 47px);background-attachment:fixed}
+#app{max-width:620px;margin:0 auto;padding:20px 16px 40px}
+.card{background:var(--white);border:3px solid var(--ink);border-radius:24px;box-shadow:6px 6px 0 var(--ink);padding:24px 20px}
+h1,h2{margin:0;font-weight:800;line-height:1.25}
+.word{font-family:Fredoka,"Noto Sans TC",sans-serif;font-weight:700;font-size:clamp(34px,10vw,56px);letter-spacing:.01em;margin:6px 0 0;word-break:break-word}
+.ph{color:#5a6a9a;margin:0 0 14px}
+.btn{font:inherit;font-weight:800;font-size:18px;color:var(--ink);background:var(--sun);border:3px solid var(--ink);border-radius:16px;padding:12px 22px;cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn.alt{background:var(--white)}
+.btn.sm{font-size:14px;padding:6px 12px;box-shadow:3px 3px 0 var(--ink)}
+:focus-visible{outline:4px solid var(--blue);outline-offset:3px}
+.tag{display:inline-block;font-weight:800;font-size:14px;border:2px solid var(--ink);border-radius:999px;padding:1px 12px;background:var(--c,var(--sun))}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.dots{display:flex;gap:6px;margin-bottom:16px}
+.dot{flex:1;height:12px;border:2px solid var(--ink);border-radius:99px;background:var(--white)}
+.dot.ok{background:var(--c)}
+.dot.miss{background:repeating-linear-gradient(45deg,#e3e8f5 0 4px,var(--white) 4px 8px)}
+.dot.now{background:var(--c);animation:pulse 1s ease-in-out infinite alternate}
+@keyframes pulse{to{transform:scaleY(1.5)}}
+.opts{display:grid;gap:12px;margin-top:16px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;font:inherit;font-weight:500;font-size:17px;color:var(--ink);background:var(--white);border:3px solid var(--ink);border-radius:16px;padding:12px 14px;cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .08s,background .15s}
+.opt:not(:disabled):hover{background:#fff7d1;transform:translate(-1px,-1px)}
+.opt b{flex:none;width:30px;height:30px;display:grid;place-items:center;border:2px solid var(--ink);border-radius:50%;background:var(--bg);font-family:Fredoka,sans-serif}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--ok);font-weight:800}
+.opt.wrong{background:var(--no);color:#fff;font-weight:800}
+.opt.dim{opacity:.55}
+.fb{margin-top:16px;border:3px dashed var(--ink);border-radius:16px;padding:12px 14px;background:#fffbe6}
+.fb p{margin:0 0 12px}
+.big{font-family:Fredoka,sans-serif;font-weight:700;font-size:clamp(72px,24vw,120px);line-height:1;margin:6px 0}
+.big small{font-size:.3em}
+.emoji{font-size:56px;display:inline-block;animation:bob 1.2s ease-in-out infinite alternate}
+@keyframes bob{to{transform:translateY(-8px) rotate(6deg)}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.stat{border:3px solid var(--ink);border-radius:14px;padding:8px;text-align:center;background:var(--c)}
+.stat b{display:block;font-family:Fredoka,sans-serif;font-size:24px}
+ul.plain{list-style:none;margin:8px 0 0;padding:0}
+ul.plain li{padding:6px 0;border-bottom:2px dotted #b9c5e6}
+ul.plain li:last-child{border:0}
+.mt{margin-top:20px}
+.btns{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const KEY='rareWordQuiz.v1';
+const LV=[{n:'簡單',pts:5,c:'var(--mint)'},{n:'中等',pts:8,c:'var(--sun)'},{n:'困難',pts:12,c:'var(--pink)'}];
+const Q=[
+{w:'petrichor',p:'/ˈpɛtrɪˌkɔːr/ n.',o:['雨後泥土散發的氣味','彩虹出現前的微光','雷雨前的悶熱空氣','冬天刺骨的寒意'],e:'源自希臘文 petra（石頭）與 ichor（神的血液），形容下雨後大地的味道。'},
+{w:'serendipity',p:'/ˌsɛrənˈdɪpɪti/ n.',o:['意外發現美好事物的好運','長期努力後的成功','與老友重逢的感傷','深思熟慮後的決定'],e:'1754 年由沃波爾創造，靈感來自童話《Serendip 三王子》。'},
+{w:'ephemeral',p:'/ɪˈfɛmərəl/ adj.',o:['短暫的、轉瞬即逝的','神祕難解的','永恆不變的','極度脆弱易碎的'],e:'希臘文原意是「只持續一天」，蜉蝣（mayfly）就是它的代表。'},
+{w:'halcyon',p:'/ˈhælsiən/ adj.',o:['平靜美好的（常指懷念的往日）','炎熱乾燥的','喧鬧擁擠的','閃閃發光的'],e:'傳說翠鳥 halcyon 築巢時能讓海面風平浪靜，所以有「寧靜」之意。'},
+{w:'susurrus',p:'/suːˈsɜːrəs/ n.',o:['窸窣的低語聲','刺耳的尖叫聲','遠處的鐘聲','沉重的腳步聲'],e:'常用來形容樹葉沙沙或人們輕聲細語的聲音，字音本身就像在低語。'},
+{w:'ineffable',p:'/ɪnˈɛfəbəl/ adj.',o:['難以用言語形容的','無法被原諒的','不可能實現的','無法避免的'],e:'in-（不）+ effable（可說出的），常用來形容美、愛或震撼的感受。'},
+{w:'crepuscular',p:'/krɪˈpʌskjələr/ adj.',o:['黃昏或黎明時分的','午夜時分的','與貝殼有關的','脆弱易碎的'],e:'貓、鹿、蝙蝠等在晨昏活動的動物，就叫 crepuscular animals。'},
+{w:'defenestrate',p:'/diːˈfɛnɪstreɪt/ v.',o:['把人（或物）從窗戶丟出去','取消某人的資格','在窗戶上做裝飾','使人喘不過氣'],e:'fenestra 是拉丁文「窗」。1618 年的「布拉格擲出窗外事件」讓這個字出名。'},
+{w:'pareidolia',p:'/ˌpɛrɪˈdoʊliə/ n.',o:['在隨機圖案中看出人臉或物體的現象','對花粉的過敏反應','夢中突然墜落的驚醒感','對鏡中自己感到陌生的錯覺'],e:'在雲、牆壁、吐司上看到臉，都是 pareidolia；人腦天生愛找臉。'},
+{w:'apricity',p:'/əˈprɪsɪti/ n.',o:['冬日陽光帶來的溫暖感','杏子成熟的季節','誠實坦率的態度','春天的第一場雨'],e:'源自拉丁文 apricus（受陽光照耀的），是個十七世紀的古字。'},
+{w:'gongoozler',p:'/ɡɒŋˈɡuːzlər/ n.',o:['愛閒看運河上船隻的人','敲鑼打鼓的樂手','愛抱怨的老人','靠水吃飯的漁夫'],e:'英國運河文化的俚語，指喜歡站在岸邊發呆看船經過的人。'},
+{w:'sesquipedalian',p:'/ˌsɛskwɪpɪˈdeɪliən/ adj.',o:['愛用冗長艱深字詞的；（字）很長的','行動遲緩的','有六隻腳的','精通多國語言的'],e:'拉丁文「一英尺半長」。這個字本身就很 sesquipedalian，很諷刺吧！'}
+];
+const $=s=>document.querySelector(s),app=$('#app');
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&Array.isArray(d.history))return d}catch(e){}return{best:null,history:[]}}
+function save(d){try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
+function rank(s){
+ if(s===100)return{i:'🏆',t:'活體冷門詞典',m:'滿分！你大概連字典的註腳都讀過了。建議去幫字典校稿。'};
+ if(s>=85)return{i:'🚀',t:'詞彙大冒險家',m:'太強了，連 gongoozler 這種字都難不倒你。離滿分只差一點點！'};
+ if(s>=65)return{i:'🌟',t:'字海航行員',m:'底子紮實，簡單和中等題幾乎都拿下了。困難題再多見幾次就會變熟。'};
+ if(s>=40)return{i:'🌱',t:'好奇寶寶',m:'你已經認識一些冷門字了，剩下的就是多看、多用。再挑戰一次會進步很多。'};
+ return{i:'🐣',t:'單字新芽',m:'冷門字本來就冷門，答錯很正常！看完解析再測一次，分數會明顯上升。'};
+}
+let i=0,score=0,res=[],busy=false;
+const fmt=t=>new Date(t).toLocaleString('zh-TW',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false});
+const hist=d=>d.history.length?`<h2 style="font-size:20px" class="mt">最近成績</h2><ul class="plain">${d.history.slice(-5).reverse().map(h=>`<li>${h.r.i} <b>${h.s} 分</b>　${h.r.t}　<small>${fmt(h.t)}・答對 ${h.c}/12</small></li>`).join('')}</ul>`:'';
+
+function start(){
+ const d=load();
+ app.innerHTML=`<section class="card">
+ <h1 style="font-size:clamp(30px,9vw,44px)">冷門單字挑戰 ✨</h1>
+ <p>12 題選擇題，從簡單一路到困難。你認得幾個罕見的英文字？</p>
+ <div class="legend">${LV.map(l=>`<span class="tag" style="--c:${l.c}">${l.n}・每題 ${l.pts} 分</span>`).join('')}</div>
+ <p>${d.best!==null?`你的最高分：<b>${d.best} 分</b>`:'還沒有紀錄，來挑戰看看吧！'}</p>
+ <div class="btns"><button class="btn" id="go">開始測驗</button></div>${hist(d)}
+ ${d.history.length?'<div class="btns"><button class="btn alt sm" id="clr">清除紀錄</button></div>':''}</section>`;
+ $('#go').onclick=()=>{i=0;score=0;res=[];ask()};
+ const c=$('#clr');if(c)c.onclick=()=>{if(confirm('確定要清除所有成績紀錄嗎？')){save({best:null,history:[]});start()}};
+}
+function ask(){
+ const q=Q[i],L=LV[i>>2];busy=false;
+ const opts=shuffle(q.o.map((t,k)=>({t,ok:k===0})));
+ app.innerHTML=`<section class="card">
+ <div class="dots" aria-label="第 ${i+1} 題，共 12 題">${Q.map((_,k)=>`<i class="dot ${k<i?(res[k]?'ok':'miss'):k===i?'now':''}" style="--c:${LV[k>>2].c}"></i>`).join('')}</div>
+ <div class="row"><span class="tag" style="--c:${L.c}">${L.n}・${L.pts} 分</span><span>第 ${i+1} / 12 題　目前 ${score} 分</span></div>
+ <p class="word">${q.w}</p><p class="ph">${q.p}</p>
+ <div class="opts">${opts.map((o,k)=>`<button class="opt" data-ok="${o.ok?1:0}"><b>${'ABCD'[k]}</b><span>${o.t}</span></button>`).join('')}</div>
+ <div id="fb"></div></section>`;
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(b));
+}
+function pick(b){
+ if(busy)return;busy=true;
+ const ok=b.dataset.ok==='1',q=Q[i],L=LV[i>>2];
+ res[i]=ok;if(ok)score+=L.pts;
+ document.querySelectorAll('.opt').forEach(o=>{o.disabled=true;if(o.dataset.ok==='1')o.classList.add('right');else if(o===b)o.classList.add('wrong');else o.classList.add('dim')});
+ const last=i===Q.length-1;
+ $('#fb').innerHTML=`<div class="fb"><p><b>${ok?`答對了！+${L.pts} 分 🎉`:'差一點！正確答案已標示 💡'}</b><br>${q.e}</p><button class="btn" id="nx">${last?'看成績':'下一題'}</button></div>`;
+ const n=$('#nx');n.onclick=()=>{if(last)finish();else{i++;ask()}};n.focus();
+}
+function finish(){
+ const r=rank(score),c=res.filter(Boolean).length,d=load();
+ d.history.push({t:Date.now(),s:score,c,r:{i:r.i,t:r.t}});
+ d.history=d.history.slice(-30);
+ d.best=Math.max(d.best??0,score);save(d);
+ const by=[0,1,2].map(k=>res.slice(k*4,k*4+4).filter(Boolean).length);
+ const wrong=Q.filter((_,k)=>!res[k]);
+ app.innerHTML=`<section class="card" style="text-align:center">
+ <span class="emoji">${r.i}</span>
+ <h1 style="font-size:clamp(26px,8vw,36px)">${r.t}</h1>
+ <div class="big"><span id="num">${reduce?score:0}</span><small> / 100</small></div>
+ <p>答對 ${c} / 12 題${score===d.best?'　🏅 這是你的最高分':`　最高分 ${d.best}`}</p>
+ <p style="max-width:30em;margin:0 auto">${r.m}</p>
+ <div class="stats">${LV.map((l,k)=>`<div class="stat" style="--c:${l.c}">${l.n}<b>${by[k]}/4</b></div>`).join('')}</div>
+ <div style="text-align:left">
+ ${wrong.length?`<h2 style="font-size:20px">答錯的字</h2><ul class="plain">${wrong.map(q=>`<li><b>${q.w}</b>：${q.o[0]}</li>`).join('')}</ul>`:'<p><b>全部答對，沒有需要複習的字！</b></p>'}
+ ${hist(d)}</div>
+ <div class="btns" style="justify-content:center"><button class="btn" id="again">再測一次</button><button class="btn alt" id="home">回首頁</button></div></section>`;
+ $('#again').onclick=()=>{i=0;score=0;res=[];ask()};
+ $('#home').onclick=start;
+ if(!reduce){const el=$('#num'),t0=performance.now(),D=900;(function f(t){const p=Math.min(1,(t-t0)/D);el.textContent=Math.round(score*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0)}
+ scrollTo(0,0);
+}
+start();
+</script>
+</body>
+</html>
